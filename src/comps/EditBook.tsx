@@ -9,10 +9,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+
+import Swal from "sweetalert2";
 import { Label } from "@/components/ui/label";
 import { FaPen } from "react-icons/fa";
 import { useState } from "react";
 import type { IBook } from "@/types";
+import { useUpdateBookMutation } from "@/redux/features/books/booksApi";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditBookProps {
   book: IBook;
@@ -27,14 +39,26 @@ export function EditBook({ book }: EditBookProps) {
     description: book.description,
     copies: book.copies.toString(),
   });
+  const [updateBook] = useUpdateBookMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const res = await updateBook({ id: book._id, bookData: formData }).unwrap();
+    if (res?.success) {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: `Book Updated Successfully`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
 
     // You can send a mutation request here
     console.log("Update data:", { ...formData, _id: book._id });
@@ -79,12 +103,31 @@ export function EditBook({ book }: EditBookProps) {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="genre">Genre</Label>
-                <Input
-                  id="genre"
-                  name="genre"
+
+                <Select
                   value={formData.genre}
-                  onChange={handleChange}
-                />
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      genre: value as IBook["genre"],
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select genre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Select Genre</SelectLabel>
+                      <SelectItem value="FICTION">FICTION</SelectItem>
+                      <SelectItem value="NON_FICTION">NON_FICTION</SelectItem>
+                      <SelectItem value="SCIENCE">SCIENCE</SelectItem>
+                      <SelectItem value="HISTORY">HISTORY</SelectItem>
+                      <SelectItem value="BIOGRAPHY">BIOGRAPHY</SelectItem>
+                      <SelectItem value="FANTASY">FANTASY</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="isbn">ISBN</Label>

@@ -1,13 +1,57 @@
-import { useGetBooksQuery } from "@/redux/features/books/booksApi";
+import {
+  useDeleteBookMutation,
+  useGetBooksQuery,
+} from "@/redux/features/books/booksApi";
 import type { IBook } from "@/types";
 import { FaTrashAlt } from "react-icons/fa";
 import { EditBook } from "../comps/EditBook";
+import { BorrowBook } from "@/comps/BorrowBook";
+import Swal from "sweetalert2";
 
 export default function AllBooks() {
   const { data, isLoading } = useGetBooksQuery();
+  const [deleteBook] = useDeleteBookMutation();
 
   const books = data?.data || []; // ← safely get the IBook[] from response
 
+  const handleDelete = (id: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteBook(id)
+          .unwrap()
+          .then((res) => {
+            if (res?.success) {
+              Swal.fire({
+                title: "Deleted!",
+                text: "Book Deleted Successfully",
+                icon: "success",
+              });
+            } else {
+              Swal.fire({
+                title: "Error",
+                text: "Something went wrong.",
+                icon: "error",
+              });
+            }
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: "Error",
+              text: error.response?.data?.message || "Failed to delete book.",
+              icon: "error",
+            });
+          });
+      }
+    });
+  };
   if (isLoading) return <div>Loading...</div>;
   return (
     <div>
@@ -58,19 +102,20 @@ export default function AllBooks() {
                     <div className="flex">
                       <EditBook book={book} />
                       <button
-                        // onClick={() => setSelectedSubmission(book)}
+                        onClick={() => handleDelete(book._id)}
                         className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform"
                       >
                         <FaTrashAlt></FaTrashAlt>
                       </button>
                     </div>
                     <div>
-                      <button
+                      <BorrowBook></BorrowBook>
+                      {/* <button
                         // onClick={() => setSelectedSubmission(book)}
                         className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform mt-1"
                       >
                         Borrow
-                      </button>
+                      </button> */}
                     </div>
                   </td>
                 </tr>

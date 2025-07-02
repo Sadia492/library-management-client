@@ -1,8 +1,10 @@
 // For creating a book
+
 export interface IBookInput {
   title: string;
   author: string;
   genre:
+    | ""
     | "FICTION"
     | "NON_FICTION"
     | "SCIENCE"
@@ -19,3 +21,5 @@ export interface IBookInput {
 export interface IBook extends IBookInput {
   _id: string;
 }
+
+export type SubmitHandler<T> = (e: React.FormEvent<HTMLFormElement>) => void;
