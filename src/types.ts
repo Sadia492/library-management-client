@@ -23,3 +23,18 @@ export interface IBook extends IBookInput {
 }
 
 export type SubmitHandler<T> = (e: React.FormEvent<HTMLFormElement>) => void;
+
+export interface IBorrowSummary {
+  _id: string;
+  totalQuantity: number;
+  book: {
+    title: string;
+    isbn: string;
+  };
+}
+
+export interface GetBorrowsResponse {
+  success: boolean;
+  message: string;
+  data: IBorrowSummary[];
+}

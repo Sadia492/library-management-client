@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,42 +12,111 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router";
+import { useBorrowBookMutation } from "@/redux/features/borrow/borrowApi";
 
-export function BorrowBook() {
+interface BorrowBookProps {
+  bookId: string;
+  availableCopies: number;
+  title: string;
+}
+
+export function BorrowBook({
+  bookId,
+  availableCopies,
+  title,
+}: BorrowBookProps) {
+  const [quantity, setQuantity] = useState(1);
+  const [dueDate, setDueDate] = useState("");
+  const [borrowBook] = useBorrowBookMutation();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (quantity < 1 || quantity > availableCopies) {
+      alert(`Quantity must be between 1 and ${availableCopies}`);
+      return;
+    }
+    if (!dueDate) {
+      alert("Please select a due date");
+      return;
+    }
+
+    try {
+      const response = await borrowBook({
+        book: bookId,
+        quantity,
+        dueDate,
+      }).unwrap();
+
+      if (response?.success) {
+        alert("✅ Book borrowed successfully!");
+      }
+      navigate("/borrow-summary");
+    } catch (error) {
+      alert("❌ Failed to borrow book.");
+    }
+  };
+
   return (
     <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform mt-1">
-            Borrow
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+      <DialogTrigger asChild>
+        <Button className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform mt-1">
+          Borrow
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+            <DialogTitle>Borrow Book</DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when you&apos;re
-              done.
+              Borrow <strong>{title}</strong> – fill in the quantity and due
+              date.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="name-1">Name</Label>
-              <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
+
+          <div className="grid gap-4 mt-4">
+            <div className="grid gap-2">
+              <Label htmlFor="quantity">Quantity (max {availableCopies})</Label>
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                min={1}
+                max={availableCopies}
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                required
+              />
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="username-1">Username</Label>
-              <Input id="username-1" name="username" defaultValue="@peduarte" />
+            <div className="grid gap-2">
+              <Label htmlFor="dueDate">Due Date</Label>
+              <Input
+                id="dueDate"
+                name="dueDate"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
             </div>
           </div>
-          <DialogFooter>
+
+          <DialogFooter className="mt-4">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Save changes</Button>
+            <Button
+              type="submit"
+              // disabled={isLoading}
+            >
+              Bor
+              {/* {isLoading ? "Borrowing..." : "Confirm Borrow"} */}
+            </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }

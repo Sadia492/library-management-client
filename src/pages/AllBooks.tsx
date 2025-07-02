@@ -109,7 +109,12 @@ export default function AllBooks() {
                       </button>
                     </div>
                     <div>
-                      <BorrowBook></BorrowBook>
+                      <BorrowBook
+                        bookId={book._id}
+                        availableCopies={book.copies}
+                        title={book.title}
+                      />
+
                       {/* <button
                         // onClick={() => setSelectedSubmission(book)}
                         className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform mt-1"
