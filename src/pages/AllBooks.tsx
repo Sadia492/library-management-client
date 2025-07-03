@@ -9,6 +9,7 @@ import { BorrowBook } from "@/comps/BorrowBook";
 import Swal from "sweetalert2";
 import LoadingSpinner from "@/comps/LoadingSpinner";
 import toast from "react-hot-toast";
+import { BookDetails } from "@/comps/BookDetails";
 
 export default function AllBooks() {
   const { data, isLoading, isError } = useGetBooksQuery();
@@ -102,10 +103,11 @@ export default function AllBooks() {
                   </td>
                   <td className="py-3 px-6 text-gray-700">{book?.copies}</td>
                   <td className="py-3 px-6 text-gray-700">
-                    {book?.available ? "Available" : "Not Available"}
+                    {book?.available ? "Available" : "Unavailable"}
                   </td>
                   <td className="py-3 px-6">
                     <div className="flex gap-2">
+                      <BookDetails book={book} />
                       <EditBook book={book} />
                       <button
                         onClick={() => handleDelete(book._id)}
