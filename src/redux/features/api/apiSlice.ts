@@ -7,5 +7,5 @@ export const apiSlice = createApi({
     credentials: "include",
   }),
   tagTypes: ["Book", "Borrow"],
-  endpoints: (builder) => ({}),
+  endpoints: () => ({}),
 });

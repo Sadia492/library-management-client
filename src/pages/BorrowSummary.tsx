@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2 } from "lucide-react";
+import LoadingSpinner from "@/comps/LoadingSpinner";
 
 export default function BorrowSummary() {
   const { data, isLoading, isError } = useGetBorrowsQuery();
@@ -16,24 +16,19 @@ export default function BorrowSummary() {
   const summary = data?.data || [];
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="animate-spin w-6 h-6 text-gray-600" />
-        <span className="ml-2 text-gray-600">Loading borrow summary...</span>
-      </div>
-    );
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
   if (isError) {
     return (
-      <div className="text-center text-red-500 mt-10">
+      <div className="text-center text-red-500 mt-24">
         ❌ Failed to load borrow summary.
       </div>
     );
   }
 
   return (
-    <Card className="max-w-5xl mx-auto mt-10 p-4 shadow-md rounded-2xl">
+    <Card className="w-11/12 mx-auto p-4 shadow-md rounded-2xl mt-24">
       <CardHeader>
         <CardTitle className="text-2xl text-gray-800">
           📚 Borrow Summary
@@ -58,14 +53,25 @@ export default function BorrowSummary() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {summary.map((borrow, index) => (
-                  <TableRow key={borrow.book?.isbn || index}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{borrow.book?.title}</TableCell>
-                    <TableCell>{borrow.book?.isbn}</TableCell>
-                    <TableCell>{borrow.totalQuantity}</TableCell>
+                {summary?.length > 0 ? (
+                  summary.map((borrow, index) => (
+                    <TableRow key={borrow.book?.isbn || index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{borrow.book?.title}</TableCell>
+                      <TableCell>{borrow.book?.isbn}</TableCell>
+                      <TableCell>{borrow.totalQuantity}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      className="text-center text-gray-500 font-medium"
+                    >
+                      No books has been borrowed
+                    </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>

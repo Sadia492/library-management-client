@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router";
 import { useBorrowBookMutation } from "@/redux/features/borrow/borrowApi";
+import toast from "react-hot-toast";
 
 interface BorrowBookProps {
   bookId: string;
@@ -28,17 +29,32 @@ export function BorrowBook({
 }: BorrowBookProps) {
   const [quantity, setQuantity] = useState(1);
   const [dueDate, setDueDate] = useState("");
-  const [borrowBook] = useBorrowBookMutation();
+  const [borrowBook, { isLoading }] = useBorrowBookMutation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (quantity < 1 || quantity > availableCopies) {
-      alert(`Quantity must be between 1 and ${availableCopies}`);
+
+    if (availableCopies < 1) {
+      toast.error("❌ No copies available for borrowing.");
       return;
     }
-    if (!dueDate) {
-      alert("Please select a due date");
+
+    if (quantity < 1) {
+      toast.error("❌ Quantity must be at least 1.");
+      return;
+    }
+
+    if (quantity > availableCopies) {
+      toast.error(`❌ Only ${availableCopies} copies are available.`);
+      return;
+    }
+    const selectedDate = new Date(dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // remove time part for accurate date-only comparison
+
+    if (!dueDate || selectedDate < today) {
+      toast.error("❌ Please select a valid due date (today or later).");
       return;
     }
 
@@ -50,11 +66,11 @@ export function BorrowBook({
       }).unwrap();
 
       if (response?.success) {
-        alert("✅ Book borrowed successfully!");
+        toast.success(response?.message);
+        navigate("/borrow-summary");
       }
-      navigate("/borrow-summary");
-    } catch (error) {
-      alert("❌ Failed to borrow book.");
+    } catch (error: any) {
+      toast.error(error?.message || "❌ Failed to borrow book.");
     }
   };
 
@@ -83,8 +99,8 @@ export function BorrowBook({
                 id="quantity"
                 name="quantity"
                 type="number"
-                min={1}
-                max={availableCopies}
+                // min={1}
+                // max={availableCopies}
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
                 required
@@ -107,12 +123,8 @@ export function BorrowBook({
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="submit"
-              // disabled={isLoading}
-            >
-              Bor
-              {/* {isLoading ? "Borrowing..." : "Confirm Borrow"} */}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Borrowing..." : "Confirm Borrow"}
             </Button>
           </DialogFooter>
         </form>

@@ -25,12 +25,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import toast from "react-hot-toast";
 
 interface EditBookProps {
   book: IBook;
 }
 
 export function EditBook({ book }: EditBookProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: book.title,
     author: book.author,
@@ -39,7 +41,7 @@ export function EditBook({ book }: EditBookProps) {
     description: book.description,
     copies: book.copies.toString(),
   });
-  const [updateBook] = useUpdateBookMutation();
+  const [updateBook, { isLoading }] = useUpdateBookMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,28 +50,32 @@ export function EditBook({ book }: EditBookProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const res = await updateBook({ id: book._id, bookData: formData }).unwrap();
-    if (res?.success) {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: `Book Updated Successfully`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
+    try {
+      const res = await updateBook({
+        id: book._id,
+        bookData: formData,
+      }).unwrap();
+      if (res?.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: res?.message || "Book updated successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        setIsDialogOpen(false);
+      } else {
+        toast.error(res?.message);
+      }
+    } catch (error: any) {
+      toast.error(error?.message);
     }
-
-    // You can send a mutation request here
-    console.log("Update data:", { ...formData, _id: book._id });
-
-    // TODO: call your updateBookMutation()
   };
 
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gray-700 text-white px-4 py-2 mr-1 rounded-lg shadow-md hover:shadow-xl transition-transform">
+        <Button className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform">
           <FaPen />
         </Button>
       </DialogTrigger>
@@ -165,7 +171,9 @@ export function EditBook({ book }: EditBookProps) {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Save changes</Button>
+            <Button disabled={isLoading} type="submit">
+              {isLoading ? "Saving" : "Save"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

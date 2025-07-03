@@ -7,12 +7,14 @@ import { FaTrashAlt } from "react-icons/fa";
 import { EditBook } from "../comps/EditBook";
 import { BorrowBook } from "@/comps/BorrowBook";
 import Swal from "sweetalert2";
+import LoadingSpinner from "@/comps/LoadingSpinner";
+import toast from "react-hot-toast";
 
 export default function AllBooks() {
-  const { data, isLoading } = useGetBooksQuery();
+  const { data, isLoading, isError } = useGetBooksQuery();
   const [deleteBook] = useDeleteBookMutation();
 
-  const books = data?.data || []; // ← safely get the IBook[] from response
+  const books = data?.data || [];
 
   const handleDelete = (id: string) => {
     Swal.fire({
@@ -31,30 +33,34 @@ export default function AllBooks() {
             if (res?.success) {
               Swal.fire({
                 title: "Deleted!",
-                text: "Book Deleted Successfully",
+                text: res?.message,
                 icon: "success",
               });
             } else {
-              Swal.fire({
-                title: "Error",
-                text: "Something went wrong.",
-                icon: "error",
-              });
+              toast.error(res?.message);
             }
           })
           .catch((error) => {
-            Swal.fire({
-              title: "Error",
-              text: error.response?.data?.message || "Failed to delete book.",
-              icon: "error",
-            });
+            toast.error(error?.message);
           });
       }
     });
   };
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
+  if (isError)
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-xl font-semibold text-red-600">
+          Failed to fetch books.
+        </h2>
+        <p className="text-gray-500 mt-2">
+          Please check your internet connection or try again later.
+        </p>
+      </div>
+    );
+
   return (
-    <div>
+    <div className="w-11/12 mx-auto">
       <div className="overflow-x-scroll" style={{ overflowX: "scroll" }}>
         <table className="table text-center border-separate border-spacing-y-3 border-white w-full">
           <thead
@@ -99,7 +105,7 @@ export default function AllBooks() {
                     {book?.available ? "Available" : "Not Available"}
                   </td>
                   <td className="py-3 px-6">
-                    <div className="flex">
+                    <div className="flex gap-2">
                       <EditBook book={book} />
                       <button
                         onClick={() => handleDelete(book._id)}
@@ -114,13 +120,6 @@ export default function AllBooks() {
                         availableCopies={book.copies}
                         title={book.title}
                       />
-
-                      {/* <button
-                        // onClick={() => setSelectedSubmission(book)}
-                        className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-xl transition-transform mt-1"
-                      >
-                        Borrow
-                      </button> */}
                     </div>
                   </td>
                 </tr>
@@ -128,7 +127,7 @@ export default function AllBooks() {
             ) : (
               <tr>
                 <td colSpan={6} className="text-2xl font-bold text-primary">
-                  No Pending Assignment Found
+                  No Books Found
                 </td>
               </tr>
             )}

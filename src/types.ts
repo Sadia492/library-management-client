@@ -22,7 +22,7 @@ export interface IBook extends IBookInput {
   _id: string;
 }
 
-export type SubmitHandler<T> = (e: React.FormEvent<HTMLFormElement>) => void;
+// export type SubmitHandler<T> = (e: React.FormEvent<HTMLFormElement>) => void;
 
 export interface IBorrowSummary {
   _id: string;
