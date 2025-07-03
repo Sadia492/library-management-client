@@ -87,8 +87,6 @@ git clone https://github.com/Sadia492/library-management-client.git
 cd library-management-client
 ```
 
-````
-
 ### 2. Install dependencies
 
 ```bash
@@ -151,4 +149,3 @@ Access the app at: `http://localhost:5000`
 - See all borrowed items → `/borrow-summary`
 
 ---
-````
