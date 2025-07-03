@@ -1,9 +1,10 @@
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import logo from "../../public/Books-Flat--Streamline-Fluent-Emoji.svg";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const pathname = window.location.pathname;
+  const { pathname } = useLocation();
+  // console.log(pathname);
   const [isScrolled, setIsScrolled] = useState(false);
   useEffect(() => {
     const handleScroll = () => {

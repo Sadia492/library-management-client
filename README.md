@@ -1,69 +1,157 @@
-# React + TypeScript + Vite
+Here's a professional and well-structured `README.md` based on your project description:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+````markdown
+# 📚 Minimal Library Management System
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A clean, client-side Library Management System built with **React**, **Redux Toolkit Query**, and **TypeScript**. This minimalist system allows users to view, manage, and borrow books without authentication or payment integration, focusing purely on functionality and state management.
 
-## Expanding the ESLint configuration
+## 🚀 Project Overview
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This is a minimal Library Management System (LMS) developed to demonstrate core CRUD operations, state management with **RTK Query**, and responsive UI design using **React** and **Tailwind CSS**.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Goals:**
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- Implement full CRUD functionality for books.
+- Allow book borrowing with real-time stock validation.
+- Summarize borrowed books via aggregation.
+- Practice clean architecture and modular coding (backend MVC pattern).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## ✨ Features
+
+### 1. Public Routes
+
+- All pages are publicly accessible—no login required.
+
+### 2. Book Management
+
+- View books in a table: Title, Author, Genre, ISBN, Copies, Availability.
+- Actions:
+  - **Edit**: Pre-filled form to update book info.
+  - **Delete**: Confirmation dialog before removal.
+  - **Borrow**: Opens a form to initiate a borrow.
+  - **Add New Book**: Form with fields like Title, Author, ISBN, etc.
+
+### 3. Borrow Book
+
+- Form includes quantity and due date.
+- Quantity cannot exceed available copies.
+- Auto-updates book availability.
+- Redirect to summary page after success.
+
+### 4. Borrow Summary
+
+- Aggregated view of all borrowed books.
+- Displays: Book Title, ISBN, Total Quantity Borrowed.
+
+---
+
+## 🗺️ Page Structure
+
+| Route             | Description                         |
+| ----------------- | ----------------------------------- |
+| `/books`          | All books listed with actions       |
+| `/create-book`    | Form to add a new book              |
+| `/books`          | Book Modal detail view              |
+| `/books`          | Edit book Modal information         |
+| `/books`          | Borrow form Modal for selected book |
+| `/borrow-summary` | View summary of all borrowed books  |
+
+---
+
+## 🎨 UI/UX Highlights
+
+- Clean and minimalist UI
+- Fully responsive (Mobile, Tablet, Desktop)
+- Navigation bar and footer on all pages
+- Intuitive form inputs and clear buttons
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer      | Technology                |
+| ---------- | ------------------------- |
+| Frontend   | React, TypeScript         |
+| Styling    | Tailwind CSS / Plain CSS  |
+| State Mgmt | Redux Toolkit + RTK Query |
+| Backend    | Node.js, Express.js       |
+| Database   | MongoDB, Mongoose         |
+
+---
+
+## 🛠️ Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Sadia492/library-management-client.git
+cd library-management-client
+```
+````
+
+### 2. Install dependencies
+
+```bash
+# Install frontend
+cd client
+npm install
+
+# Install backend
+cd ../server
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Configure Environment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in the `server` folder:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/library
 ```
+
+---
+
+## ▶️ Usage
+
+### Start Backend
+
+```bash
+cd server
+npm run dev
+```
+
+### Start Frontend
+
+```bash
+cd client
+npm start
+```
+
+Access the app at: `http://localhost:5000`
+
+---
+
+## 🔌 API Integration
+
+- All API calls managed using **Redux Toolkit Query**.
+- Strongly typed interfaces for API responses.
+- Optimistic UI updates for enhanced UX.
+- Separate endpoints for:
+
+  - Book CRUD: `/api/books`
+  - Borrow operations: `/api/borrows`
+
+---
+
+## 💡 Examples
+
+- Add a new book → `/create-book`
+- Borrow a book → Click "Borrow" on `/books`
+- See all borrowed items → `/borrow-summary`
+
+---
