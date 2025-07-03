@@ -1,8 +1,3 @@
-Here's a professional and well-structured `README.md` based on your project description:
-
----
-
-````markdown
 # 📚 Minimal Library Management System
 
 A clean, client-side Library Management System built with **React**, **Redux Toolkit Query**, and **TypeScript**. This minimalist system allows users to view, manage, and borrow books without authentication or payment integration, focusing purely on functionality and state management.
@@ -91,6 +86,7 @@ This is a minimal Library Management System (LMS) developed to demonstrate core 
 git clone https://github.com/Sadia492/library-management-client.git
 cd library-management-client
 ```
+
 ````
 
 ### 2. Install dependencies
@@ -155,3 +151,4 @@ Access the app at: `http://localhost:5000`
 - See all borrowed items → `/borrow-summary`
 
 ---
+````
